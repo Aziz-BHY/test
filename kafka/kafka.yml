@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-deploy
+  namespace: signals
+  labels:
+    projectName: signals
+spec:
+  selector:
+    matchLabels:
+      run: signals
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: signals
+    spec:
+      containers:
+      - name: kafka
+        image: bitnami/kafka:3.4
+        ports:
+        - containerPort: 9092
+        env:
+          - name: KAFKA_CFG_ZOOKEEPER_CONNECT
+            value: zookeeper-svc
+          # remove in prod  
+          - name: ALLOW_PLAINTEXT_LISTENER
+            value: 'yes'
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-svc
+  labels:
+    projectName: signals
+spec:
+  ports:
+  - port: 9092
+    protocol: TCP
+  selector:
+    run: signals
+  

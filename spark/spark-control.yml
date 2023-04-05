@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spark-controller-deploy
+  namespace: signals
+  labels:
+    projectName: signals
+spec:
+  selector:
+    matchLabels:
+      run: signals
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: signals
+    spec:
+      containers:
+      - name: spark-controller
+        image: bitnami/spark:3.3
+        env:
+          - name: SPARK_MODE
+            value: master
+          - name: SPARK_RPC_AUTHENTICATION_ENABLED
+            value: 'no'
+          - name: SPARK_RPC_ENCRYPTION_ENABLED
+            value: 'no'
+          - name: SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED
+            value: 'no'
+          - name: SPARK_RPC_AUTHENTICATION_ENABLED
+            value: 'no'
+          - name: SPARK_RPC_ENCRYPTION_ENABLED
+            value: 'no'
+          - name: SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED
+            value: 'no'
+          - name: SPARK_SSL_ENABLED
+            value: 'no'
+          - name: SPARK_USER
+            value: 'spark'
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: spark-controller-svc
+  labels:
+    projectName: signals
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+  selector:
+    run: signals
+  

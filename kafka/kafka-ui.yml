@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-ui-deploy
+  namespace: signals
+  labels:
+    projectName: signals
+spec:
+  selector:
+    matchLabels:
+      run: signals
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: signals
+    spec:
+      containers:
+      - name: kafka-ui
+        image: provectuslabs/kafka-ui
+        ports:
+        - containerPort: 8080
+        env:
+          - name: DYNAMIC_CONFIG_ENABLED
+            value: 'true'
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-ui-svc
+  labels:
+    projectName: signals
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+  selector:
+    run: signals
+  

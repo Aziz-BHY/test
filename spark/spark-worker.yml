@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spark-worker-deploy
+  namespace: signals
+  labels:
+    projectName: signals
+spec:
+  selector:
+    matchLabels:
+      run: signals
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: signals
+    spec:
+      containers:
+      - name: spark-worker
+        image: bitnami/spark:3.3
+        env:
+          - name: SPARK_MODE
+            value: worker
+          - name: SPARK_MASTER_URL
+            value: spark-controller-svc
+          - name: SPARK_WORKER_MEMORY
+            value: 1G
+          - name: SPARK_WORKER_CORES
+            value: 1
+          - name: SPARK_RPC_AUTHENTICATION_ENABLED
+            value: 'no'
+          - name: SPARK_RPC_ENCRYPTION_ENABLED
+            value: 'no'
+          - name: SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED
+            value: 'no'
+          - name: SPARK_SSL_ENABLED
+            value: 'no'
+          - name: SPARK_USER
+            value: 'spark'
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: spark-worker-svc
+  labels:
+    projectName: signals
+spec:
+  selector:
+    run: signals
+  
